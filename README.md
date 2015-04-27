@@ -17,13 +17,15 @@ The simulator runs using fixed-length time periods called *ticks*.  Ticks are de
 
 ### Example
 
-python
+```
+$ python
 import sim
 import sample
 s = sim.Sim(sample.config)
 s.tick()  # runs one tick
 s.tick(5) # runs 5 ticks
 s.reset() # resets simulation
+```
 
 ## Components
 
