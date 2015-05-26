@@ -6,6 +6,8 @@ This code implements a straightforward assembly line.  Items move along the line
 
 The *Sim* class maintains and runs the simulation.  It processes the configuraiton of the simulation, builds the appropriate components, and runs the simulation.  
 
+When a Sim object is created you can pass in the configuration as either a dict or a string.  If a dict it will be passed directly to load().  If a string it will be treated as the name for a YAML file, which will be loaded into a dict then passed to load().
+
 Main operations:
 
 * *load(config)* - loads a dict that describes a valid configuration (see below).  The *config* can also be passed in when the *Sim* object is created.
@@ -15,13 +17,23 @@ Main operations:
 
 The simulator runs using fixed-length time periods called *ticks*.  Ticks are defined as the time it will take a pallet to go one pallet length on the conveyor.  
 
-### Example
+### Example (pass in a dict)
 
 ```
 $ python
 import sim
 import sample
 s = sim.Sim(sample.config)
+s.tick()  # runs one tick
+s.tick(5) # runs 5 ticks
+s.reset() # resets simulation
+
+### Example (pass in a dict)
+
+```
+$ python
+import sim
+s = sim.Sim("sample.yaml")
 s.tick()  # runs one tick
 s.tick(5) # runs 5 ticks
 s.reset() # resets simulation
@@ -47,6 +59,10 @@ The configuration is a python *dict* that contains the information to define the
 
 - *pal_len*:  length of a pallet in inches (int)
 - *num_pallets*: number of pallets in the simulation (int)
+- *conveyors*:  an array of conveyor definitions (array)
+
+Conveyor configurations have the following items:
+
 - *conv_name'*:  name of the conveyor (string).  Currently not used for anything.
 - *conv_len*:  length of the conveyor in feet (int)
 - *conv_spd*:  conveyor speed in feet/minute (int)
@@ -59,11 +75,13 @@ Station configurations have the following items:
 - *sta_cycle_time*:  number of seconds to process a pallet (int)
 - *sta_type*::  type of station (not currently used (int)
 
-The file *sample.py* contains a valid configuration.
+The files *sample.py* and *sample.yaml* contain a valid configuration.
+
+Note that only one conveyor can currently be specified.
 
 ## Current Limitations and Todos
 
-1. Currently the configuration is done by passing in a python dict. Todo: allow configuration input to be done via a standard input file.
+1.  Currently only supports one conveyor
 
 2. Currently the stations take a pallet, operate on it for a fixed amount of time, and pass it out.  Todo:  build out a set of more complex
 
