@@ -27,6 +27,7 @@ s = sim.Sim(sample.config)
 s.tick()  # runs one tick
 s.tick(5) # runs 5 ticks
 s.reset() # resets simulation
+```
 
 ### Example (pass in a dict)
 
