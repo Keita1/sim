@@ -4,7 +4,7 @@
 config = {
     'pal_len': 12,  # PL
     'num_pallets': 15,  # NP
-    'converors': [{
+    'conveyors': [{
         'conv_name':  'mainline',
         'conv_len': 70,
         'conv_spd': 60,
