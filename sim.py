@@ -6,6 +6,7 @@ import sink
 import source
 import station
 import conveyor
+import config as conf
 
 class Sim:
 
@@ -17,7 +18,9 @@ class Sim:
         self.sink = None
         self.time = 0
         self.tick_len = 0
-        if config != None:
+        if type(config) is str:
+            self.load(conf.read_yaml(config))
+        elif type(config) is dict:
             self.load(config)
 
     def load(self, config):
@@ -27,14 +30,18 @@ class Sim:
         self.source = source.PalletSource(config['num_pallets'], config['pal_len'])
         self.sink = sink.PalletSink()
         # create the conveyor
-        self.conveyor = conveyor.Conveyor(config['conv_spd'], config['conv_len'], config['pal_len'])
+        # only one supported right now
+        if len(config['conveyors']) > 1:
+            error("Only one conveyor supported at this time")
+        conv_config = config['conveyors'][0]
+        self.conveyor = conveyor.Conveyor(conv_config['conv_spd'], conv_config['conv_len'], config['pal_len'])
         # connect the source, conveyor and sink
         self.source.connect_output(self.conveyor)
         self.conveyor.connect_input(self.source)
         self.sink.connect_input(self.conveyor)
         self.conveyor.connect_output(self.sink)
         # create the stations
-        for stn in config['stations']:
+        for stn in conv_config['stations']:
             # create it
             new_station = station.Station(stn['sta_num'], stn['sta_pos'],
                 stn['sta_type'], stn['sta_cycle_time'])
@@ -43,15 +50,16 @@ class Sim:
             # add it to the conveyor
             self.conveyor.add_station(new_station)
         # set the length of the time tick to time for pallet to go one pallet length
-        self.tick_len = config['pal_len'] * 5 / config['conv_spd']
+        self.tick_len = config['pal_len'] * 5 / conv_config['conv_spd']
         # create the array of things to call in the right order
         self.top_level_objects = [self.sink, self.conveyor, self.source]
-
-
+        self.display()
+        
     def reset(self):
         self.time= 0
         for obj in self.top_level_objects:
             obj.reset()
+        self.display()
 
     def tick(self, n=1, display=True):
         for i in range(0, n):
